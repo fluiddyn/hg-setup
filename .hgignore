@@ -1,0 +1,5 @@
+syntax: glob
+
+.pdm-python
+
+__pycache__
