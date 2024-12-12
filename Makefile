@@ -4,3 +4,9 @@ sync:
 
 lock:
 	pdm lock
+
+format:
+	pdm run format
+
+test:
+	pdm run pytest tests

@@ -8,12 +8,12 @@ name = "hg-setup"
 version = "0.1.0"
 description = "Helper for setting up and configuring Mercurial"
 authors = [
-    {name = "Pierre Augier", email = "pierre.augier@univ-grenoble-alpes.fr"},
+    { name = "Pierre Augier", email = "pierre.augier@univ-grenoble-alpes.fr" },
 ]
 dependencies = ["click", "textual"]
 requires-python = ">=3.11"
 readme = "README.md"
-license = {text = "BSD-3-Clause"}
+license = { text = "BSD-3-Clause" }
 
 [project.scripts]
 hg-setup = "hg_setup:main"
@@ -21,3 +21,18 @@ hg-setup = "hg_setup:main"
 
 [tool.pdm]
 distribution = true
+package-dir = "src"
+
+[tool.pdm.dev-dependencies]
+test = ["pytest"]
+dev = ["ruff", "ipython"]
+
+[tool.pdm.options]
+lock = ["-G", ":all"]
+
+[tool.pdm.scripts]
+format = "ruff format src tests"
+
+
+[tool.pytest.ini_options]
+addopts = "--pdbcls=IPython.terminal.debugger:TerminalPdb"

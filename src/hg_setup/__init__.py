@@ -1,6 +1,4 @@
-"""hg-setup package
-
-"""
+"""hg-setup package"""
 
 import click
 
@@ -15,10 +13,11 @@ def main():
 
 
 @main.command(context_settings=CONTEXT_SETTINGS)
-def init():
+@click.option("-n", "--name", help="user name", default=None)
+@click.option("-e", "--email", help="email address", default=None)
+def init(name, email):
     """Initialize Mercurial configuration file"""
-
-    print("Not implemented")
+    print(f"Not implemented, {name = }, {email = }")
 
 
 @main.command(context_settings=CONTEXT_SETTINGS)
