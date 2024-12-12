@@ -8,6 +8,8 @@ from pathlib import Path
 
 import rich_click as click
 
+from .init_tui import init_tui
+
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
@@ -21,8 +23,11 @@ def main():
 @main.command(context_settings=CONTEXT_SETTINGS)
 @click.option("-n", "--name", help="user name", default=None)
 @click.option("-e", "--email", help="email address", default=None)
-def init(name, email):
+@click.option("--auto", is_flag=True, help="no user interaction")
+def init(name, email, auto):
     """Initialize Mercurial configuration file"""
+    if not auto:
+        init_tui()
     print(f"Not implemented, {name = }, {email = }")
 
 
