@@ -10,7 +10,7 @@ description = "Helper for setting up and configuring Mercurial"
 authors = [
     { name = "Pierre Augier", email = "pierre.augier@univ-grenoble-alpes.fr" },
 ]
-dependencies = ["click", "textual"]
+dependencies = ["click", "textual", "rich-click"]
 requires-python = ">=3.11"
 readme = "README.md"
 license = { text = "BSD-3-Clause" }

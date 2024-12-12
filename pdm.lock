@@ -5,7 +5,7 @@
 groups = ["default", "dev", "test"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:748b977797330743662d709760fac2cda2cf15b5ede9a1d67f10eeef081a34d9"
+content_hash = "sha256:765d46e5ddb741eb45b85603d05fbd484eb3d341895b8b30bebe67812e073581"
 
 [[metadata.targets]]
 requires_python = ">=3.11"
@@ -340,6 +340,23 @@ dependencies = [
 files = [
     {file = "rich-13.9.4-py3-none-any.whl", hash = "sha256:6049d5e6ec054bf2779ab3358186963bac2ea89175919d699e378b99738c2a90"},
     {file = "rich-13.9.4.tar.gz", hash = "sha256:439594978a49a09530cff7ebc4b5c7103ef57baf48d5ea3184f21d9a2befa098"},
+]
+
+[[package]]
+name = "rich-click"
+version = "1.8.5"
+requires_python = ">=3.7"
+summary = "Format click help output nicely with rich"
+groups = ["default"]
+dependencies = [
+    "click>=7",
+    "importlib-metadata; python_version < \"3.8\"",
+    "rich>=10.7",
+    "typing-extensions>=4",
+]
+files = [
+    {file = "rich_click-1.8.5-py3-none-any.whl", hash = "sha256:0fab7bb5b66c15da17c210b4104277cd45f3653a7322e0098820a169880baee0"},
+    {file = "rich_click-1.8.5.tar.gz", hash = "sha256:a3eebe81da1c9da3c32f3810017c79bd687ff1b3fa35bfc9d8a3338797f1d1a1"},
 ]
 
 [[package]]
