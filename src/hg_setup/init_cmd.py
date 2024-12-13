@@ -1,3 +1,7 @@
+"""hg-setup init"""
+
+from pathlib import Path
+
 from textual.app import App, ComposeResult
 from textual import on
 from textual.containers import Horizontal, VerticalScroll
@@ -13,6 +17,7 @@ from textual.widgets import (
     Markdown,
 )
 
+import rich_click as click
 
 from textual.binding import Binding
 
@@ -97,4 +102,13 @@ def init_auto(name, email):
     # TODO: good default editor depending on what is available
     editor = "nano"
 
-    print(create_hgrc_text(name, email, editor))
+    path_hgrc = Path.home() / ".hgrc"
+
+    if path_hgrc.exists():
+        click.echo(f"{path_hgrc} already exists. Nothing to do.")
+        return
+
+    text = create_hgrc_text(name, email, editor)
+    path_hgrc.write_text(text)
+
+    click.echo(f"configuration written in {path_hgrc}.")

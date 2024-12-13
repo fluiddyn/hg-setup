@@ -3,6 +3,8 @@
 import os
 import subprocess
 
+from pathlib import Path
+
 from textwrap import dedent
 from shutil import which
 
@@ -71,12 +73,16 @@ def create_hgrc_text(name, email, editor, tweakdefaults=True):
         ext_lines.append(line)
 
     # get pythonexe to be able to check installation of
-    pythonexe = subprocess.run(
+    process = subprocess.run(
         ["hg", "debuginstall", "-T", "{pythonexe}"],
         capture_output=True,
-        check=True,
+        # cannot use check=True
+        check=False,
         text=True,
-    ).stdout
+    )
+    pythonexe = process.stdout
+    if not Path(pythonexe).exists():
+        raise ValueError(str(process))
 
     def check_ext_installed(ext):
         process = subprocess.run([pythonexe, "-c", f"import {ext}"], check=False)
