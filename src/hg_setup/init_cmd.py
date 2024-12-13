@@ -6,14 +6,12 @@ from textual.app import App, ComposeResult
 from textual import on
 from textual.containers import Horizontal, VerticalScroll
 from textual.widgets import (
-    Static,
     Label,
     Input,
     Header,
     Footer,
     Checkbox,
     Button,
-    Pretty,
     Markdown,
 )
 
@@ -29,9 +27,19 @@ inputs = {
     "editor": dict(placeholder="nano", value="nano"),
 }
 
+checkboxs = {
+    "tweakdefaults": True,
+    "basic history edition": True,
+    "advanced history edition": False,
+}
+
 
 class InitHgrcApp(App):
     _hgrc_text: str
+    _inputs: dict
+    _checkboxs: dict
+    _markdown: Markdown
+    _label_feedback: Label
 
     BINDINGS = [
         Binding(key="q", action="quit", description="Quit the app"),
@@ -52,13 +60,19 @@ class InitHgrcApp(App):
         super().__init__()
 
     def _create_markdown_code(self):
-        args = [inp.value for inp in self._inputs.values()]
-        args.append(self._checkbox_tweak.value)
-        self._hgrc_text = self.hgrc_maker.make_text(*args)
+        kwargs = {key: inp.value for key, inp in self._inputs.items()}
+        kwargs.update(
+            {key: checkbox.value for key, checkbox in self._checkboxs.items()}
+        )
+        self._hgrc_text = self.hgrc_maker.make_text(**kwargs)
         return f"```{self._hgrc_text}```"
 
     def compose(self) -> ComposeResult:
         self._inputs = {key: Input(**kwargs) for key, kwargs in inputs.items()}
+        self._checkboxs = {
+            key.replace(" ", "_"): Checkbox(key, value=value)
+            for key, value in checkboxs.items()
+        }
         yield Header()
 
         with Horizontal():
@@ -71,8 +85,8 @@ class InitHgrcApp(App):
                 yield Label(
                     "To get slight improvements to the UI over time (recommended)"
                 )
-                self._checkbox_tweak = Checkbox("tweakdefaults", value=True)
-                yield self._checkbox_tweak
+                for checkbox in self._checkboxs.values():
+                    yield checkbox
 
             with VerticalScroll():
                 self._markdown = Markdown(self._create_markdown_code())
@@ -99,6 +113,13 @@ class InitHgrcApp(App):
 
     @on(Input.Changed)
     def on_input_changed(self, event: Input.Changed) -> None:
+        self.on_user_inputs_changed()
+
+    @on(Checkbox.Changed)
+    def on_checkbox_changed(self, event: Input.Changed) -> None:
+        self.on_user_inputs_changed()
+
+    def on_user_inputs_changed(self):
         self._markdown.update(self._create_markdown_code())
 
 

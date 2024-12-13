@@ -39,7 +39,15 @@ class HgrcCodeMaker:
         else:
             self.diff_tool = False
 
-    def make_text(self, name, email, editor, tweakdefaults=True):
+    def make_text(
+        self,
+        name,
+        email,
+        editor,
+        tweakdefaults=True,
+        basic_history_edition=True,
+        advanced_history_edition=False,
+    ):
         if not name:
             name = "???"
 
@@ -116,12 +124,17 @@ class HgrcCodeMaker:
 
         add_ext_line("topic", self.enable_topic, comment="lightweight feature branches")
 
+        if not self.enable_topic:
+            enable_hist_edition = False
+        else:
+            enable_hist_edition = basic_history_edition
+
         ext_lines.append("# history edition")
         for ext in ["evolve", "rebase", "absorb", "uncommit"]:
-            add_ext_line(ext, self.enable_topic)
+            add_ext_line(ext, enable_hist_edition)
 
         add_line()
-        add_ext_line("histedit", False, "advanced history edition")
+        add_ext_line("histedit", advanced_history_edition, "advanced history edition")
 
         add_line()
         add_ext_line("hgext.extdiff", self.diff_tool, "external diff tools")
