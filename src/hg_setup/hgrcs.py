@@ -7,7 +7,7 @@ from textwrap import dedent
 from shutil import which
 
 
-def create_hgrc_text(name, email, editor, tweakdefaults):
+def create_hgrc_text(name, email, editor, tweakdefaults=True):
     if not name:
         name = "???"
 
@@ -85,7 +85,7 @@ def create_hgrc_text(name, email, editor, tweakdefaults):
     enable_hggit = check_ext_installed("hggit")
 
     add_ext_line(
-        "hggit", enable_hggit, comment="only to use Mercurial with GitHub and Gitlab"
+        "hggit", enable_hggit, comment="to use Mercurial with GitHub and Gitlab"
     )
 
     add_line()

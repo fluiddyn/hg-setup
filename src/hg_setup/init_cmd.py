@@ -38,7 +38,11 @@ class InitHgrcApp(App):
         ),
     ]
 
-    def __init__(self):
+    def __init__(self, name, email):
+        if name is not None:
+            inputs["name"]["value"] = name
+        if email is not None:
+            inputs["email"]["value"] = email
         super().__init__()
 
     def _create_markdown_code(self):
@@ -81,6 +85,16 @@ class InitHgrcApp(App):
         self._markdown.update(self._create_markdown_code())
 
 
-def init_tui():
-    app = InitHgrcApp()
+def init_tui(name, email):
+    """main TUI function for command init"""
+    app = InitHgrcApp(name, email)
     app.run()
+
+
+def init_auto(name, email):
+    """init without user interaction"""
+
+    # TODO: good default editor depending on what is available
+    editor = "nano"
+
+    print(create_hgrc_text(name, email, editor))
