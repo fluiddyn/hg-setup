@@ -1,6 +1,7 @@
 syntax: glob
 
 .pdm-python
+.venv
 
 __pycache__
 .pytest_cache
