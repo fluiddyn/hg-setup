@@ -1,0 +1,10 @@
+
+Frame {
+    border: round $accent;
+    border_title_align: center;
+}
+
+Log {
+    border: round $accent;
+    border_title_align: center;
+}

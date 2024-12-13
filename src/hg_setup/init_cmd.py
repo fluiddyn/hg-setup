@@ -7,11 +7,12 @@ from textual import on
 from textual.containers import Horizontal, VerticalScroll
 from textual.widgets import (
     Label,
+    Log,
     Input,
     Header,
     Footer,
     Checkbox,
-    Button,
+    SelectionList,
     Markdown,
 )
 
@@ -34,20 +35,62 @@ checkboxs = {
 }
 
 
+class Frame(VerticalScroll):
+    pass
+
+
+class VerticalHgrcParams(Frame):
+    inputs: dict
+    checkboxs: dict
+
+    def compose(self) -> ComposeResult:
+        self.inputs = {key: Input(**kwargs) for key, kwargs in inputs.items()}
+        self.checkboxs = {
+            key.replace(" ", "_"): Checkbox(key, value=value)
+            for key, value in checkboxs.items()
+        }
+
+        yield Label("Enter your name and email")
+        for key in ["name", "email"]:
+            yield self.inputs[key]
+        yield Label("Enter your preferred editor")
+        yield self.inputs["editor"]
+        yield Label("To get slight improvements to the UI over time (recommended)")
+
+        yield self.checkboxs["tweakdefaults"]
+
+        yield Label("Do you plan to use history edition?")
+        for key in tuple(self.checkboxs.keys())[1:]:
+            yield self.checkboxs[key]
+
+
+class VerticalCompletionParams(Frame):
+    def compose(self) -> ComposeResult:
+        yield Label("For which shells do you want to initialize autocompletion?")
+
+        shells_ = [("bash", 1, True), ("zsh", 2, True), ("tcsh", 3, False)]
+        self.selected_shells = SelectionList(*shells_)
+        yield self.selected_shells
+
+
 class InitHgrcApp(App):
     _hgrc_text: str
-    _inputs: dict
-    _checkboxs: dict
-    _markdown: Markdown
+    log_hgrc: Markdown
     _label_feedback: Label
+
+    CSS_PATH = "init_app.tcss"
 
     BINDINGS = [
         Binding(key="q", action="quit", description="Quit the app"),
         Binding(
-            key="question_mark",
-            action="help",
-            description="Show help screen",
-            key_display="?",
+            key="s",
+            action="save_hgrc",
+            description="Save ~/.hgrc",
+        ),
+        Binding(
+            key="i",
+            action="init_completion",
+            description="Init autocompletion",
         ),
     ]
 
@@ -59,57 +102,66 @@ class InitHgrcApp(App):
         self.hgrc_maker = HgrcCodeMaker()
         super().__init__()
 
-    def _create_markdown_code(self):
-        kwargs = {key: inp.value for key, inp in self._inputs.items()}
+    def _create_hgrc_code(self):
+        kwargs = {key: inp.value for key, inp in self.vert_hgrc_params.inputs.items()}
         kwargs.update(
-            {key: checkbox.value for key, checkbox in self._checkboxs.items()}
+            {
+                key: checkbox.value
+                for key, checkbox in self.vert_hgrc_params.checkboxs.items()
+            }
         )
         self._hgrc_text = self.hgrc_maker.make_text(**kwargs)
-        return f"```{self._hgrc_text}```"
+        return self._hgrc_text
 
     def compose(self) -> ComposeResult:
-        self._inputs = {key: Input(**kwargs) for key, kwargs in inputs.items()}
-        self._checkboxs = {
-            key.replace(" ", "_"): Checkbox(key, value=value)
-            for key, value in checkboxs.items()
-        }
         yield Header()
 
         with Horizontal():
             with VerticalScroll():
-                yield Label("Enter your name and email")
-                for key in ["name", "email"]:
-                    yield self._inputs[key]
-                yield Label("Enter your preferred editor")
-                yield self._inputs["editor"]
-                yield Label(
-                    "To get slight improvements to the UI over time (recommended)"
-                )
-                for checkbox in self._checkboxs.values():
-                    yield checkbox
+                self.vert_hgrc_params = VerticalHgrcParams()
+                yield self.vert_hgrc_params
+
+                self.vert_compl_params = VerticalCompletionParams()
+                yield self.vert_compl_params
 
             with VerticalScroll():
-                self._markdown = Markdown(self._create_markdown_code())
-                yield self._markdown
-                yield Button.success("Save ~/.hgrc")
-                self._label_feedback = Label()
-                yield self._label_feedback
+                self.log_hgrc = Log("", auto_scroll=False)
+                yield self.log_hgrc
+                self.log_feedback = Log()
+                yield self.log_feedback
 
         yield Footer()
 
     def on_mount(self) -> None:
         self.title = "Initialize Mercurial user configuration"
-        self.sub_title = "written in ~/.hgrc"
 
-    @on(Button.Pressed)
-    def act(self, event: Button.Pressed) -> None:
+        widget = self.log_hgrc
+        widget.styles.height = "4fr"
+        widget.border_title = "Potential ~/.hgrc"
+
+        widget = self.log_feedback
+        widget.styles.height = "1fr"
+        widget.border_title = "log"
+
+        widget = self.vert_hgrc_params
+        widget.styles.height = "2fr"
+        widget.border_title = "~/.hgrc parameters"
+
+        widget = self.vert_compl_params
+        widget.styles.height = "1fr"
+        widget.border_title = "Autocompletion"
+
+    def action_save_hgrc(self) -> None:
         path_hgrc = Path.home() / ".hgrc"
         if path_hgrc.exists():
-            self._label_feedback.update(f"{path_hgrc} already exists. Nothing to do.")
+            self.log_feedback.write_line(f"{path_hgrc} already exists. Nothing to do.")
             return
-        self._create_markdown_code()
+        self._create_hgrc_code()
         path_hgrc.write_text(self._hgrc_text)
-        self._label_feedback.value = f"configuration written in {path_hgrc}."
+        self.log_feedback.write_line(f"configuration written in {path_hgrc}.")
+
+    def action_init_completion(self) -> None:
+        self.log_feedback.write_line("not implemented.")
 
     @on(Input.Changed)
     def on_input_changed(self, event: Input.Changed) -> None:
@@ -120,7 +172,8 @@ class InitHgrcApp(App):
         self.on_user_inputs_changed()
 
     def on_user_inputs_changed(self):
-        self._markdown.update(self._create_markdown_code())
+        self.log_hgrc.clear()
+        self.log_hgrc.write(self._create_hgrc_code())
 
 
 def init_tui(name, email):
