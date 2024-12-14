@@ -88,7 +88,7 @@ class InitHgrcApp(App):
             description="Save ~/.hgrc",
         ),
         Binding(
-            key="i",
+            key="a",
             action="init_completion",
             description="Init autocompletion",
         ),
@@ -137,7 +137,7 @@ class InitHgrcApp(App):
 
         widget = self.log_hgrc
         widget.styles.height = "4fr"
-        widget.border_title = "Potential ~/.hgrc"
+        widget.border_title = "Read the resulting ~/.hgrc (press on the 's' key to save)"
 
         widget = self.log_feedback
         widget.styles.height = "1fr"
@@ -145,11 +145,11 @@ class InitHgrcApp(App):
 
         widget = self.vert_hgrc_params
         widget.styles.height = "2fr"
-        widget.border_title = "~/.hgrc parameters"
+        widget.border_title = "Enter few parameters"
 
         widget = self.vert_compl_params
         widget.styles.height = "1fr"
-        widget.border_title = "Autocompletion"
+        widget.border_title = "Autocompletion (press on the 'a' key to initialize)"
 
     def action_save_hgrc(self) -> None:
         path_hgrc = Path.home() / ".hgrc"
