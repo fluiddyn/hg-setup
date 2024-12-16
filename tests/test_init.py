@@ -16,7 +16,8 @@ def test_auto_with_options(tmp_path):
     tmp_dir.mkdir()
 
     env = os.environ.copy()
-    env["HOME"] = str(tmp_dir)
+    name_home_envvar = "HOME" if os.name != "nt" else "UserProfile"
+    env[name_home_envvar] = str(tmp_dir)
 
     runner = CliRunner()
 
@@ -24,7 +25,7 @@ def test_auto_with_options(tmp_path):
     print("\nhg-setup " + " ".join(command))
     result = runner.invoke(main, command, env=env)
     assert result.exit_code == 0
-    assert "configuration written in" in result.output
+    assert "configuration written in" in result.output, list(tmp_dir.glob("*"))
 
     result = runner.invoke(main, command, env=env)
     assert result.exit_code == 0
