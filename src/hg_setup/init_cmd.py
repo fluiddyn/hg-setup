@@ -12,7 +12,6 @@ from textual.widgets import (
     Header,
     Footer,
     Checkbox,
-    SelectionList,
     Markdown,
 )
 
@@ -30,7 +29,7 @@ inputs = {
 
 checkboxs = {
     "tweakdefaults": True,
-    "basic history edition": True,
+    "simple history edition": True,
     "advanced history edition": False,
 }
 
@@ -50,7 +49,7 @@ class VerticalHgrcParams(Frame):
             for key, value in checkboxs.items()
         }
 
-        yield Label("Enter your name and email")
+        yield Label("[b]Enter your name and email[/b]")
         for key in ["name", "email"]:
             yield self.inputs[key]
         yield Label("Enter your preferred editor")
@@ -62,15 +61,6 @@ class VerticalHgrcParams(Frame):
         yield Label("Do you plan to use history edition?")
         for key in tuple(self.checkboxs.keys())[1:]:
             yield self.checkboxs[key]
-
-
-class VerticalCompletionParams(Frame):
-    def compose(self) -> ComposeResult:
-        yield Label("For which shells do you want to initialize autocompletion?")
-
-        shells_ = [("bash", 1, True), ("zsh", 2, True), ("tcsh", 3, False)]
-        self.selected_shells = SelectionList(*shells_)
-        yield self.selected_shells
 
 
 class InitHgrcApp(App):
@@ -121,9 +111,6 @@ class InitHgrcApp(App):
                 self.vert_hgrc_params = VerticalHgrcParams()
                 yield self.vert_hgrc_params
 
-                self.vert_compl_params = VerticalCompletionParams()
-                yield self.vert_compl_params
-
             with VerticalScroll():
                 self.log_hgrc = Log("", auto_scroll=False)
                 yield self.log_hgrc
@@ -137,7 +124,9 @@ class InitHgrcApp(App):
 
         widget = self.log_hgrc
         widget.styles.height = "4fr"
-        widget.border_title = "Read the resulting ~/.hgrc (press on the 's' key to save)"
+        widget.border_title = (
+            "Read the resulting ~/.hgrc (press on the 's' key to save)"
+        )
 
         widget = self.log_feedback
         widget.styles.height = "1fr"
@@ -146,10 +135,6 @@ class InitHgrcApp(App):
         widget = self.vert_hgrc_params
         widget.styles.height = "2fr"
         widget.border_title = "Enter few parameters"
-
-        widget = self.vert_compl_params
-        widget.styles.height = "1fr"
-        widget.border_title = "Autocompletion (press on the 'a' key to initialize)"
 
     def action_save_hgrc(self) -> None:
         path_hgrc = Path.home() / ".hgrc"

@@ -45,7 +45,7 @@ class HgrcCodeMaker:
         email,
         editor,
         tweakdefaults=True,
-        basic_history_edition=True,
+        simple_history_edition=True,
         advanced_history_edition=False,
     ):
         if not name:
@@ -127,7 +127,7 @@ class HgrcCodeMaker:
         if not self.enable_topic:
             enable_hist_edition = False
         else:
-            enable_hist_edition = basic_history_edition
+            enable_hist_edition = simple_history_edition
 
         ext_lines.append("# history edition")
         for ext in ["evolve", "rebase", "absorb", "uncommit"]:
