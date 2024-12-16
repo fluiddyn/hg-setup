@@ -1,0 +1,44 @@
+stages:
+  - test
+  - build
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - when: always
+
+variables:
+  PDM_CACHE_DIR: ${CI_PROJECT_DIR}/.pdm-cache
+
+image: python:3.11
+
+before_script:
+  - python -m pip install pdm
+
+
+
+test:linux:
+  stage: test
+  script:
+    - pdm sync --clean
+    - pdm run pytest --cov=hg_setup tests
+
+
+build:package:
+  stage: build
+  script:
+    - pdm config cache_dir ${PDM_CACHE_DIR}
+    - pdm build || pdm lock --group :all --refresh
+  needs: []
+  artifacts:
+    when: always
+    paths:
+      - pdm.lock
+      - dist
+    expire_in: 24 hrs
+  cache:
+    when: always
+    key: pdmcache-$CI_COMMIT_BRANCH
+    paths:
+      - ${PDM_CACHE_DIR}
