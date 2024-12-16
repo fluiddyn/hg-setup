@@ -198,7 +198,7 @@ def init_tui(name, email):
 
 def save_existing_file(path):
     now = datetime.now()
-    path_saved = path.with_name(path.name + f"_{now:%Y-%m-%d_%H:%M:%S}")
+    path_saved = path.with_name(path.name + f"_{now:%Y-%m-%d_%H-%M-%S}")
     os.rename(path, path_saved)
 
 
