@@ -150,7 +150,7 @@ class HgrcCodeMaker:
             enable_hist_edition = simple_history_edition
 
         ext_lines.append("# history edition")
-        for ext in ["evolve", "rebase", "absorb", "uncommit"]:
+        for ext in ["evolve", "rebase", "absorb"]:
             add_ext_line(ext, enable_hist_edition)
 
         add_line()
