@@ -1,6 +1,6 @@
 # hg-setup: easily setup Mercurial with a tiny Python application
 
-Warning: in early development.
+Warning: in development.
 
 ## Background
 
@@ -58,15 +58,14 @@ modified).
 
 ```sh
 conda-app install mercurial
-pixy global install mercurial-app
+pixi global install mercurial-app
 pixi global install mercurial --with hg-git --with hg-evolve --with hg-setup
 ```
 
 ## User interfaces
 
-Warning: in early development. This is still completely unstable!
-
-The ~/.hgrc file can be initialize with a simple Terminal User Interface (TUI):
+The ~/.hgrc file and shell completion for bash and zsh can be initialized with a simple
+Terminal User Interface (TUI):
 
 ```sh
 hg-setup init
