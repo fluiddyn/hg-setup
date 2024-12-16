@@ -3,13 +3,13 @@
 import os
 import sys
 
-from importlib.resources import files
 from pathlib import Path
 
 import rich_click as click
 
 from .init_cmd import init_tui, init_auto
 from .hgrcs import check_hg_conf_file
+from .completion import init_shell_completions, init_shell_completion_1_shell
 
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
@@ -30,8 +30,8 @@ def main():
 )
 def init(name, email, auto, force):
     """Initialize Mercurial configuration file"""
+    init_shell_completions()
     exists, path_config = check_hg_conf_file()
-
     if exists and not force:
         click.echo(f"File {path_config} already exists. Nothing to do.")
         return
@@ -42,13 +42,13 @@ def init(name, email, auto, force):
         init_tui(name, email)
 
 
-@main.command(context_settings=CONTEXT_SETTINGS)
-@click.option("-l", "--local", is_flag=True, help="edit repository config")
-def config(local):
-    """UI to edit Mercurial configuration files"""
+# @main.command(context_settings=CONTEXT_SETTINGS)
+# @click.option("-l", "--local", is_flag=True, help="edit repository config")
+# def config(local):
+#     """UI to edit Mercurial configuration files"""
 
-    click.echo("Not implemented")
-    click.echo(f"{local = }")
+#     click.echo("Not implemented")
+#     click.echo(f"{local = }")
 
 
 @main.command(context_settings=CONTEXT_SETTINGS)
@@ -65,32 +65,8 @@ def init_shell_completion(name, share_dir):
 
     """
     supported_shells = ["bash", "zsh"]
-
     if name not in supported_shells:
         str_shells = ". ".join(supported_shells)
         click.echo(f"'{name}' not in supported shells ({str_shells}).")
         sys.exit(1)
-
-    text = files("hg_setup.data").joinpath(f"{name}_completion").read_text()
-
-    if share_dir is None:
-        try:
-            share_dir = Path(os.environ["XDG_DATA_HOME"])
-        except KeyError:
-            share_dir = Path.home() / ".local/share"
-
-    match name:
-        case "bash":
-            path_dest = share_dir / "bash-completion/completions/hg"
-        case "zsh":
-            path_dest = share_dir / "zsh/site-functions/_hg"
-        case _:
-            assert False
-
-    if path_dest.exists():
-        click.echo(f"{path_dest} already exists")
-        return
-
-    path_dest.parent.mkdir(parents=True, exist_ok=True)
-    path_dest.write_text(text)
-    click.echo(f"{path_dest} written")
+    init_shell_completion_1_shell(name, share_dir)

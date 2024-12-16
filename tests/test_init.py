@@ -3,10 +3,14 @@ import os
 from click.testing import CliRunner
 
 from hg_setup import main
+from hg_setup import completion
+from hg_setup.hgrcs import name_default
 
 
 def test_auto_with_options(tmp_path):
     """test hg-setup init --auto with --name and --email options"""
+
+    completion.CONSIDER_SYSTEM_PATHS = False
 
     tmp_dir = tmp_path / "home_test"
     tmp_dir.mkdir()
@@ -20,7 +24,7 @@ def test_auto_with_options(tmp_path):
     print("\nhg-setup " + " ".join(command))
     result = runner.invoke(main, command, env=env)
     assert result.exit_code == 0
-    assert result.output.startswith("configuration written in")
+    assert "configuration written in" in result.output
 
     result = runner.invoke(main, command, env=env)
     assert result.exit_code == 0
@@ -29,6 +33,6 @@ def test_auto_with_options(tmp_path):
     command = ["init", "-n", "toto", "-e", "toto.lastname@me", "--auto", "--force"]
     result = runner.invoke(main, command, env=env)
     assert result.exit_code == 0
-    assert result.output.startswith("configuration written in")
+    assert "configuration written in" in result.output
 
-    assert len(list(tmp_dir.glob("*"))) == 2
+    assert len(list(tmp_dir.glob(name_default + "*"))) == 2
