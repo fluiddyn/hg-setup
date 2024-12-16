@@ -1,6 +1,9 @@
 """hg-setup init"""
 
+import os
+
 from pathlib import Path
+from datetime import datetime
 
 from textual.app import App, ComposeResult
 from textual import on
@@ -167,13 +170,16 @@ def init_tui(name, email):
     app.run()
 
 
-def init_auto(name, email):
+def init_auto(name, email, force, path_hgrc):
     """init without user interaction"""
 
     # TODO: good default editor depending on what is available
     editor = "nano"
 
-    path_hgrc = Path.home() / ".hgrc"
+    if force:
+        now = datetime.now()
+        path_saved = path_hgrc.with_name(path_hgrc.name + f"_{now:%Y-%m-%d_%H:%M:%S}")
+        os.rename(path_hgrc, path_saved)
 
     if path_hgrc.exists():
         click.echo(f"{path_hgrc} already exists. Nothing to do.")

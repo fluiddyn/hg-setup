@@ -9,6 +9,7 @@ from pathlib import Path
 import rich_click as click
 
 from .init_cmd import init_tui, init_auto
+from .hgrcs import check_hg_conf_file
 
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
@@ -24,10 +25,19 @@ def main():
 @click.option("-n", "--name", help="user name", default=None)
 @click.option("-e", "--email", help="email address", default=None)
 @click.option("--auto", is_flag=True, help="no user interaction")
-def init(name, email, auto):
+@click.option(
+    "-f", "--force", is_flag=True, help="Act even if a config file already exists"
+)
+def init(name, email, auto, force):
     """Initialize Mercurial configuration file"""
+    exists, path_config = check_hg_conf_file()
+
+    if exists and not force:
+        click.echo(f"File {path_config} already exists. Nothing to do.")
+        return
+
     if auto:
-        init_auto(name, email)
+        init_auto(name, email, force, path_config)
     else:
         init_tui(name, email)
 
@@ -37,8 +47,8 @@ def init(name, email, auto):
 def config(local):
     """UI to edit Mercurial configuration files"""
 
-    print("Not implemented")
-    print(f"{local = }")
+    click.echo("Not implemented")
+    click.echo(f"{local = }")
 
 
 @main.command(context_settings=CONTEXT_SETTINGS)
@@ -50,6 +60,7 @@ def init_shell_completion(name, share_dir):
     Examples:
 
       hg-setup init-shell-completion bash
+
       hg-setup init-shell-completion zsh
 
     """
@@ -77,9 +88,9 @@ def init_shell_completion(name, share_dir):
             assert False
 
     if path_dest.exists():
-        print(f"{path_dest} already exists")
+        click.echo(f"{path_dest} already exists")
         return
 
     path_dest.parent.mkdir(parents=True, exist_ok=True)
     path_dest.write_text(text)
-    print(f"{path_dest} written")
+    click.echo(f"{path_dest} written")
