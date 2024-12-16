@@ -40,7 +40,7 @@ uv tool install mercurial[full]
 # with Miniforge (conda-forge) and conda-app (https://foss.heptapod.net/fluiddyn/conda-app)
 conda-app install mercurial
 # this requires optional deps on conda-forge
-pixy global install mercurial[full]
+pixi global install mercurial[full]
 ```
 
 However, we are not yet there. Nevertheless, this will work very soon (once hg-setup is
@@ -60,6 +60,12 @@ modified).
 conda-app install mercurial
 pixi global install mercurial-app
 pixi global install mercurial --with hg-git --with hg-evolve --with hg-setup
+```
+
+Note that this will soon work too, independently of how Mercurial is installed:
+
+```sh
+uvx hg-setup init
 ```
 
 ## User interfaces

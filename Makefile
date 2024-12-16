@@ -9,4 +9,7 @@ format:
 	pdm run format
 
 test:
-	pdm run pytest tests
+	pdm run pytest --cov=hg_setup tests
+
+cov_html: test
+	pdm run coverage html

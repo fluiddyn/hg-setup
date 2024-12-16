@@ -164,7 +164,7 @@ class InitHgrcApp(App):
             if await self.push_screen_wait(
                 QuestionScreen(
                     "A user config file already exists. Do you want to replace it?"
-                ),
+                )
             ):
                 save_existing_file(path_hgrc)
             else:
