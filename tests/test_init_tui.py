@@ -1,3 +1,5 @@
+import os
+
 from hg_setup.init_cmd import InitHgrcApp
 from hg_setup.hgrcs import name_default
 
@@ -10,7 +12,8 @@ async def test_init_tui(tmp_path, monkeypatch):
     tmp_dir = tmp_path / "home_test"
     tmp_dir.mkdir()
 
-    monkeypatch.setenv("HOME", str(tmp_dir))
+    name_home_envvar = "HOME" if os.name != "nt" else "UserProfile"
+    monkeypatch.setenv(name_home_envvar, str(tmp_dir))
 
     name = "Toto Lastname"
     email = "toto.lastname@proton.me"
