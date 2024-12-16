@@ -7,11 +7,11 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ["3.11", "3.13"]
-
     steps:
       - uses: actions/checkout@v4
       - name: Install uv
@@ -21,6 +21,8 @@ jobs:
           uv tool install mercurial --with hg-git --with hg-evolve
       - name: Setup PDM
         uses: pdm-project/setup-pdm@v4
+        with:
+          python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: pdm sync --clean
       - name: Run tests
