@@ -1,0 +1,27 @@
+
+name: CI Test
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+      - name: Install Mercurial with UV
+        run: |
+          uv tool install mercurial --with hg-git --with hg-evolve
+      - name: Setup PDM
+        uses: pdm-project/setup-pdm@v4
+      - name: Install dependencies
+        run: pdm sync --clean
+      - name: Run tests
+        run: pdm run pytest --cov=hg_setup tests
