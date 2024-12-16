@@ -23,7 +23,7 @@ def check_hg_conf_file():
 
     # on windows, we also need to check for .hgrc
     path_hgrc = Path.home() / ".hgrc"
-    if path_hgrc.exists:
+    if path_hgrc.exists():
         return True, path_hgrc
     else:
         return False, path_default
@@ -43,12 +43,19 @@ class HgrcCodeMaker:
         if not Path(pythonexe).exists():
             raise ValueError(str(process))
 
-        def check_ext_installed(ext):
-            process = subprocess.run([pythonexe, "-c", f"import {ext}"], check=False)
-            return process.returncode == 0
+        if pythonexe.endswith("hg.exe"):
+            # this can happen on Windows!
+            self.enable_hggit = self.enable_topic = True
+        else:
 
-        self.enable_hggit = check_ext_installed("hggit")
-        self.enable_topic = check_ext_installed("hgext3rd.topic")
+            def check_ext_installed(ext):
+                process = subprocess.run(
+                    [pythonexe, "-c", f"import {ext}"], check=False
+                )
+                return process.returncode == 0
+
+            self.enable_hggit = check_ext_installed("hggit")
+            self.enable_topic = check_ext_installed("hgext3rd.topic")
 
         diff_tools = ["meld", "kdiff3", "difft"]
         diff_tools_avail = [

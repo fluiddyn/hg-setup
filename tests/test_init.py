@@ -25,7 +25,7 @@ def test_auto_with_options(tmp_path):
     print("\nhg-setup " + " ".join(command))
     result = runner.invoke(main, command, env=env)
     assert result.exit_code == 0
-    assert "configuration written in" in result.output
+    assert "configuration written in" in result.output, list(tmp_dir.glob("*"))
 
     result = runner.invoke(main, command, env=env)
     assert result.exit_code == 0
