@@ -9,17 +9,20 @@ from textwrap import dedent
 from shutil import which
 
 
+name_default = ".hgrc" if os.name != "nt" else "mercurial.ini"
+
+
 def check_hg_conf_file():
     """Check if a config file exists"""
 
-    path_hgrc = Path.home() / ".hgrc"
-    path_default = path_hgrc if os.name != "nt" else Path.home() / "mercurial.ini"
+    path_default = Path.home() / name_default
     exists = path_default.exists()
 
     if os.name != "nt" or exists:
         return exists, path_default
 
     # on windows, we also need to check for .hgrc
+    path_hgrc = Path.home() / ".hgrc"
     if path_hgrc.exists:
         return True, path_hgrc
     else:

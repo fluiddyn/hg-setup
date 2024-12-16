@@ -2,13 +2,13 @@
 
 import os
 
-from pathlib import Path
 from datetime import datetime
 
-from textual.app import App, ComposeResult
-from textual import on
-from textual.containers import Horizontal, VerticalScroll
+from textual.app import App, ComposeResult, Screen
+from textual import on, work
+from textual.containers import Horizontal, VerticalScroll, Center
 from textual.widgets import (
+    Button,
     Label,
     Log,
     Input,
@@ -22,7 +22,7 @@ import rich_click as click
 
 from textual.binding import Binding
 
-from .hgrcs import HgrcCodeMaker
+from .hgrcs import HgrcCodeMaker, check_hg_conf_file, name_default
 
 inputs = {
     "name": dict(placeholder="Firstname Lastname"),
@@ -35,6 +35,27 @@ checkboxs = {
     "simple history edition": True,
     "advanced history edition": False,
 }
+
+
+class QuestionScreen(Screen[bool]):
+    """Screen with a parameter."""
+
+    def __init__(self, question: str) -> None:
+        self.question = question
+        super().__init__()
+
+    def compose(self) -> ComposeResult:
+        yield Label(self.question)
+        yield Button("Yes", id="yes", variant="success")
+        yield Button("No", id="no")
+
+    @on(Button.Pressed, "#yes")
+    def handle_yes(self) -> None:
+        self.dismiss(True)
+
+    @on(Button.Pressed, "#no")
+    def handle_no(self) -> None:
+        self.dismiss(False)
 
 
 class Frame(VerticalScroll):
@@ -52,16 +73,17 @@ class VerticalHgrcParams(Frame):
             for key, value in checkboxs.items()
         }
 
-        yield Label("[b]Enter your name and email[/b]")
+        yield Label("[b]Name and email?[/b]")
         for key in ["name", "email"]:
             yield self.inputs[key]
-        yield Label("Enter your preferred editor")
-        yield self.inputs["editor"]
-        yield Label("To get slight improvements to the UI over time (recommended)")
 
+        yield Label("[b]Your preferred editor?[/b]")
+        yield self.inputs["editor"]
+
+        yield Label("[b]Get improvements to the UI over time?[/b] (recommended)")
         yield self.checkboxs["tweakdefaults"]
 
-        yield Label("Do you plan to use history edition?")
+        yield Label("[b]What about history edition?[/b]")
         for key in tuple(self.checkboxs.keys())[1:]:
             yield self.checkboxs[key]
 
@@ -78,12 +100,7 @@ class InitHgrcApp(App):
         Binding(
             key="s",
             action="save_hgrc",
-            description="Save ~/.hgrc",
-        ),
-        Binding(
-            key="a",
-            action="init_completion",
-            description="Init autocompletion",
+            description="Save config file",
         ),
     ]
 
@@ -117,57 +134,72 @@ class InitHgrcApp(App):
             with VerticalScroll():
                 self.log_hgrc = Log("", auto_scroll=False)
                 yield self.log_hgrc
-                self.log_feedback = Log()
-                yield self.log_feedback
+                self._button_save = Button.success(
+                    "Save user config file", id="button_save"
+                )
+                with Center():
+                    yield self._button_save
 
         yield Footer()
 
     def on_mount(self) -> None:
-        self.title = "Initialize Mercurial user configuration"
+        self.title = f"Initialize Mercurial user configuration file (~/{name_default})"
 
         widget = self.log_hgrc
-        widget.styles.height = "4fr"
-        widget.border_title = (
-            "Read the resulting ~/.hgrc (press on the 's' key to save)"
-        )
+        # widget.styles.height = "8fr"
+        widget.border_title = "Read resulting config text (press on 's' to save)"
 
-        widget = self.log_feedback
-        widget.styles.height = "1fr"
-        widget.border_title = "log"
+        widget = self._button_save
+        widget.styles.height = "3"
 
         widget = self.vert_hgrc_params
         widget.styles.height = "2fr"
         widget.border_title = "Enter few parameters"
 
-    def action_save_hgrc(self) -> None:
-        path_hgrc = Path.home() / ".hgrc"
-        if path_hgrc.exists():
-            self.log_feedback.write_line(f"{path_hgrc} already exists. Nothing to do.")
-            return
+    @work
+    async def action_save_hgrc(self) -> None:
+        """Save new ~/.hgrc"""
+        exists, path_hgrc = check_hg_conf_file()
+        if exists:
+            if await self.push_screen_wait(
+                QuestionScreen(
+                    "A user config file already exists. Do you want to replace it?"
+                ),
+            ):
+                save_existing_file(path_hgrc)
+            else:
+                return
         self._create_hgrc_code()
         path_hgrc.write_text(self._hgrc_text)
-        self.log_feedback.write_line(f"configuration written in {path_hgrc}.")
 
-    def action_init_completion(self) -> None:
-        self.log_feedback.write_line("not implemented.")
+    @work
+    @on(Button.Pressed, "#button_save")
+    async def on_save_button_pressed(self, event: Button.Pressed) -> None:
+        self.action_save_hgrc()
 
     @on(Input.Changed)
     def on_input_changed(self, event: Input.Changed) -> None:
         self.on_user_inputs_changed()
 
     @on(Checkbox.Changed)
-    def on_checkbox_changed(self, event: Input.Changed) -> None:
+    def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
         self.on_user_inputs_changed()
 
     def on_user_inputs_changed(self):
         self.log_hgrc.clear()
-        self.log_hgrc.write(self._create_hgrc_code())
+        self.log_hgrc.write(self._create_hgrc_code().strip())
 
 
 def init_tui(name, email):
     """main TUI function for command init"""
     app = InitHgrcApp(name, email)
     app.run()
+
+
+def save_existing_file(path):
+    now = datetime.now()
+    path_saved = path.with_name(path.name + f"_{now:%Y-%m-%d_%H:%M:%S}")
+    os.rename(path, path_saved)
 
 
 def init_auto(name, email, force, path_hgrc):
@@ -177,9 +209,7 @@ def init_auto(name, email, force, path_hgrc):
     editor = "nano"
 
     if force:
-        now = datetime.now()
-        path_saved = path_hgrc.with_name(path_hgrc.name + f"_{now:%Y-%m-%d_%H:%M:%S}")
-        os.rename(path_hgrc, path_saved)
+        save_existing_file(path_hgrc)
 
     if path_hgrc.exists():
         click.echo(f"{path_hgrc} already exists. Nothing to do.")
