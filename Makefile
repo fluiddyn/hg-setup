@@ -13,3 +13,6 @@ test:
 
 cov_html: test
 	pdm run coverage html
+
+format-md:
+	mdformat *.md

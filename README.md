@@ -1,6 +1,9 @@
 # hg-setup: easily setup Mercurial with a tiny Python application
 
-Warning: in development.
+[![Latest version](https://badge.fury.io/py/hg-setup.svg)](https://pypi.python.org/pypi/hg-setup/)
+![Supported Python versions](https://img.shields.io/pypi/pyversions/hg-setup.svg)
+[![Heptapod CI](https://foss.heptapod.net/fluiddyn/hg-setup/badges/branch/default/pipeline.svg)](https://foss.heptapod.net/fluiddyn/hg-setup/-/pipelines)
+[![Github Actions](https://github.com/fluiddyn/hg-setup/actions/workflows/ci.yml/badge.svg?branch=branch/default)](https://github.com/fluiddyn/hg-setup/actions)
 
 ## Background
 
