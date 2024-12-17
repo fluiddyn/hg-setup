@@ -18,12 +18,23 @@ before_script:
   - python -m pip install pdm
 
 
-
 test:linux:
   stage: test
   script:
     - pdm sync --clean
     - pdm run pytest --cov=hg_setup tests
+
+test:real-life:
+  stage: test
+  script:
+    - python -m pip install uv
+    - uv tool install mercurial --with hg-git --with hg-evolve
+    - uv tool install .
+    - export PATH=/root/.local/bin:$PATH
+    - hg-setup init --auto
+    - cd $HOME
+    - hg clone https://github.com/fluiddyn/hg-setup.git
+    - cd hg-setup
 
 
 build:package:

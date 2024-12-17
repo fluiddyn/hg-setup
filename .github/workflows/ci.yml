@@ -19,6 +19,10 @@ jobs:
       - name: Install Mercurial with UV
         run: |
           uv tool install mercurial --with hg-git --with hg-evolve
+      - name: Check Mercurial installation
+        run: |
+          uvx hg version -v
+          uvx hg debuginstall
       - name: Setup PDM
         uses: pdm-project/setup-pdm@v4
         with:
@@ -27,3 +31,13 @@ jobs:
         run: pdm sync --clean
       - name: Run tests
         run: pdm run pytest --cov=hg_setup tests
+      - name: Check real life usage
+        run: |
+          pdm run hg-setup -h
+          pdm run hg-setup init --auto
+          cd $HOME
+          python -c "import os; name = '.hgrc' if os.name != 'nt' else 'mercurial.ini'; file = open(name); print(file.readlines()[:4])"
+          uvx hg version -v
+          uvx hg debuginstall
+          uvx hg clone https://github.com/fluiddyn/hg-setup.git
+          cd hg-setup
