@@ -2,7 +2,8 @@
 
 The repository is currently hosted here https://foss.heptapod.net/fluiddyn/hg-setup.
 
-After the first release of 0.1.0, we will use a topic/MR based workflow.
+We use a topic/MR based workflow as explained
+[here](https://fluidhowto.readthedocs.io/en/latest/mercurial/heptapod-workflow.html).
 
 For local development, you need `make` and [PDM](https://pdm-project.org). To install the
 package, deactivate all unrelated virtual environments and run `make`.
