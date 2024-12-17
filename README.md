@@ -32,8 +32,8 @@ installation.
 
 ## Install
 
-Here, we give commands to install altogether and in an isolated environment Mercurial,
-its more useful extensions ([hg-git] and [hg-evolve]) and hg-setup.
+Here, we give commands to install in two isolated environment on one side Mercurial and
+its more useful extensions ([hg-git] and [hg-evolve]) and on the other side hg-setup.
 
 ### From the package on PyPI
 
@@ -41,19 +41,18 @@ its more useful extensions ([hg-git] and [hg-evolve]) and hg-setup.
 
 ```sh
 pipx install mercurial
-pipx inject mercurial hg-git hg-evolve hg-setup
+pipx inject mercurial hg-git hg-evolve
+pipx install hg-setup
 ```
 
 - With [UV]
 
 ```sh
-uv tool install mercurial --with hg-git --with hg-evolve --with hg-setup
+uv tool install mercurial --with hg-git --with hg-evolve
+uv tool install hg-setup
 ```
 
 ### From the conda-forge package
-
-**Soon**, there will be a conda-forge package, and one will be able to install Mercurial,
-hg-git, hg-evolve and hg-setup by running:
 
 - with [Miniforge] and [conda-app]
 
@@ -61,6 +60,7 @@ hg-git, hg-evolve and hg-setup by running:
 conda activate base
 pip install conda-app
 conda-app install mercurial
+conda-app install hg-setup
 ```
 
 - With [Pixi]
@@ -68,7 +68,9 @@ conda-app install mercurial
 ```sh
 pixi global install mercurial-app
 # or (equivalent)
-pixi global install mercurial --with hg-git --with hg-evolve --with hg-setup
+pixi global install mercurial --with hg-git --with hg-evolve
+# and then
+pixi global install hg-setup
 ```
 
 ### From source
@@ -79,24 +81,9 @@ pipx install hg-setup@hg+https://foss.heptapod.net/fluiddyn/hg-setup
 
 For development installation, see the file [CONTRIBUTING.md](./CONTRIBUTING.md).
 
-### My plans
-
-I hope that ultimately hg-setup can be installed automatically with Mercurial when
-running install commands like:
-
-```sh
-# from PyPI
-pipx install mercurial[full]
-uv tool install mercurial[full]
-# with Miniforge (conda-forge) and conda-app
-conda-app install mercurial
-# this would require optional deps on conda-forge
-pixi global install mercurial[full]
-```
-
 ## User interfaces
 
-The ~/.hgrc file and shell completion for bash and zsh can be initialized with a simple
+The `~/.hgrc` file and shell completion for bash and zsh can be initialized with a simple
 Terminal User Interface (TUI):
 
 ```sh
