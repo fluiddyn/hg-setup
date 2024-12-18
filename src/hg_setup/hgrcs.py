@@ -5,8 +5,9 @@ import subprocess
 
 from pathlib import Path
 
-from textwrap import dedent
 from shutil import which
+
+import rich_click as click
 
 
 name_default = ".hgrc" if os.name != "nt" else "mercurial.ini"
@@ -32,18 +33,27 @@ def check_hg_conf_file():
 class HgrcCodeMaker:
     def __init__(self):
         # get pythonexe to be able to check installation of
-        process = subprocess.run(
-            ["hg", "debuginstall", "-T", "{pythonexe}"],
-            capture_output=True,
-            # cannot use check=True
-            check=False,
-            text=True,
-        )
-        pythonexe = process.stdout
-        if not Path(pythonexe).exists():
-            raise ValueError(str(process))
+        try:
+            process = subprocess.run(
+                ["hg", "debuginstall", "-T", "{pythonexe}"],
+                capture_output=True,
+                # cannot use check=True
+                check=False,
+                text=True,
+            )
+        except FileNotFoundError:
+            click.secho("hg not found", fg="red")
+            hg_error = True
+        else:
+            hg_error = False
+            pythonexe = process.stdout
+            if not Path(pythonexe).exists():
+                raise ValueError(str(process))
 
-        if pythonexe.endswith("hg.exe"):
+            if pythonexe.endswith("hg.exe"):
+                hg_error = True
+
+        if hg_error:
             # this can happen on Windows!
             self.enable_hggit = self.enable_topic = True
         else:

@@ -42,7 +42,7 @@ jobs:
         run: |
           python .github/debug_which_hg.py
       - if: runner.os != 'Windows'
-        name: Mercurial installation
+        name: Check Mercurial installation
         run: |
           hg version -v
           hg debuginstall
