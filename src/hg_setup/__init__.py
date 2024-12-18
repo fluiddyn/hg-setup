@@ -1,9 +1,6 @@
 """hg-setup package"""
 
-import os
 import sys
-
-from pathlib import Path
 
 import rich_click as click
 

@@ -5,9 +5,10 @@ stages:
 
 workflow:
   rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
       when: never
-    - when: always
+    - if: $CI_COMMIT_BRANCH || $CI_COMMIT_TAG
 
 variables:
   PDM_CACHE_DIR: ${CI_PROJECT_DIR}/.pdm-cache
@@ -18,12 +19,23 @@ before_script:
   - python -m pip install pdm
 
 
-
 test:linux:
   stage: test
   script:
     - pdm sync --clean
     - pdm run pytest --cov=hg_setup tests
+
+test:real-life:
+  stage: test
+  script:
+    - python -m pip install uv
+    - uv tool install mercurial --with hg-git --with hg-evolve
+    - uv tool install .
+    - export PATH=/root/.local/bin:$PATH
+    - hg-setup init --auto
+    - cd $HOME
+    - hg clone https://github.com/fluiddyn/hg-setup.git
+    - cd hg-setup
 
 
 build:package:

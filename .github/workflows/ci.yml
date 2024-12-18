@@ -14,16 +14,47 @@ jobs:
         python-version: ["3.11", "3.13"]
     steps:
       - uses: actions/checkout@v4
-      - name: Install uv
+      - name: Install UV
         uses: astral-sh/setup-uv@v4
-      - name: Install Mercurial with UV
+      - if: runner.os != 'Windows'
+        name: Install Mercurial with UV
         run: |
           uv tool install mercurial --with hg-git --with hg-evolve
       - name: Setup PDM
         uses: pdm-project/setup-pdm@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
+      - name: Install dependencies with PDM
         run: pdm sync --clean
       - name: Run tests
         run: pdm run pytest --cov=hg_setup tests
+      - if: runner.os == 'Windows'
+        name: Remove system Mercurial on Windows
+        run: |
+          python .github/remove_old_mercurial.py
+      - if: runner.os == 'Windows'
+        name: Install Mercurial with UV
+        run: |
+          uv tool install mercurial --with hg-git --with hg-evolve
+      # hg installed with uv is broken on Windows
+      - if: runner.os == 'Windows'
+        name: Debug Mercurial installation
+        run: |
+          python .github/debug_which_hg.py
+      - if: runner.os != 'Windows'
+        name: Check Mercurial installation
+        run: |
+          hg version -v
+          hg debuginstall
+      - name: Check real life usage
+        run: |
+          pdm run hg-setup -h
+          pdm run hg-setup init --auto
+          cd $HOME
+          python -c "import os; name = '.hgrc' if os.name != 'nt' else 'mercurial.ini'; file = open(name); print(file.readlines()[:4])"
+      # hg installed with uv is broken on Windows
+      - if: runner.os != 'Windows'
+        name: Check clone of a Git repo
+        run: |
+          hg clone https://github.com/fluiddyn/hg-setup.git
+          cd hg-setup
