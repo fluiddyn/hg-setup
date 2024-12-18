@@ -87,8 +87,7 @@ class HgrcCodeMaker:
         if os.name == "nt":
             paginate = "# avoid a bug on Windows if no pager is avail\npaginate = never"
 
-        hgrc_text = dedent(
-            f"""
+        hgrc_text = f"""
             # File created by hg-setup init
             # (see 'hg help config' for more info)
             # One can delete the character '#' to activate some lines
@@ -124,18 +123,17 @@ class HgrcCodeMaker:
             # (see 'hg help extensions' for more info)
 
         """
-        )
 
-        ext_lines = []
+        lines = [line.strip() for line in hgrc_text.splitlines()]
 
         def add_ext_line(module, enable=True, comment=None):
             if comment is not None:
-                ext_lines.append("# " + comment)
+                lines.append("# " + comment)
             begin = "" if enable else "# "
-            ext_lines.append(f"{begin}{module} =")
+            lines.append(f"{begin}{module} =")
 
         def add_line(line=""):
-            ext_lines.append(line)
+            lines.append(line)
 
         add_ext_line(
             "hggit",
@@ -156,7 +154,7 @@ class HgrcCodeMaker:
         else:
             enable_hist_edition = simple_history_edition
 
-        ext_lines.append("# history edition")
+        lines.append("# history edition")
         for ext in ["evolve", "rebase", "absorb"]:
             add_ext_line(ext, enable_hist_edition)
 
@@ -169,6 +167,6 @@ class HgrcCodeMaker:
         add_line("\n[extdiff]")
         add_ext_line(f"cmd.{self.diff_tool}", self.diff_tool)
 
-        hgrc_text += "\n".join(ext_lines) + "\n"
+        hgrc_text = "\n".join(lines) + "\n"
 
         return hgrc_text
