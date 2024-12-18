@@ -24,6 +24,7 @@ jobs:
           uv tool install mercurial --with hg-git --with hg-evolve
       - name: Check Mercurial installation
         run: |
+          python .github/debug_which_hg.py
           hg version -v
           hg debuginstall
       - name: Setup PDM
