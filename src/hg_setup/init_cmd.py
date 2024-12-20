@@ -3,6 +3,7 @@
 import os
 
 from datetime import datetime
+from shutil import which
 
 from textual.app import App, ComposeResult, Screen
 from textual import on, work
@@ -24,10 +25,17 @@ from textual.binding import Binding
 
 from .hgrcs import HgrcCodeMaker, check_hg_conf_file, name_default
 
+editors_possible = ["nano", "notepad", "emacs", "vim", "vi"]
+editors_avail = [editor for editor in editors_possible if which(editor) is not None]
+try:
+    editor_default = editors_avail[0]
+except IndexError:
+    editor_default = ""
+
 inputs = {
     "name": dict(placeholder="Firstname Lastname"),
     "email": dict(placeholder="Email"),
-    "editor": dict(placeholder="nano", value="nano"),
+    "editor": dict(value=editor_default),
 }
 
 checkboxs = {
@@ -77,7 +85,10 @@ class VerticalHgrcParams(Frame):
         for key in ["name", "email"]:
             yield self.inputs[key]
 
-        yield Label("[b]Your preferred editor?[/b]")
+        question_editor = "[b]Your preferred editor?[/b]"
+        if "emacs" in editors_avail:
+            question_editor += ' (could be "emacs -nw -Q")'
+        yield Label(question_editor)
         yield self.inputs["editor"]
 
         yield Label("[b]Get improvements to the UI over time?[/b] (recommended)")
@@ -205,9 +216,6 @@ def save_existing_file(path):
 def init_auto(name, email, force, path_hgrc):
     """init without user interaction"""
 
-    # TODO: good default editor depending on what is available
-    editor = "nano"
-
     if force:
         save_existing_file(path_hgrc)
 
@@ -215,7 +223,7 @@ def init_auto(name, email, force, path_hgrc):
         click.echo(f"{path_hgrc} already exists. Nothing to do.")
         return
 
-    text = HgrcCodeMaker().make_text(name, email, editor)
+    text = HgrcCodeMaker().make_text(name, email, editor_default)
     path_hgrc.write_text(text)
 
     click.echo(f"configuration written in {path_hgrc}.")

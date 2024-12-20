@@ -30,7 +30,10 @@ def init(name, email, auto, force):
     init_shell_completions()
     exists, path_config = check_hg_conf_file()
     if exists and not force:
-        click.echo(f"File {path_config} already exists. Nothing to do.")
+        click.echo(
+            f"File {path_config} already exists. Nothing to do.\n"
+            "Run `hg-setup init -f` to launch the user interface."
+        )
         return
 
     if auto:

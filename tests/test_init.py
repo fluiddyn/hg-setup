@@ -29,7 +29,7 @@ def test_auto_with_options(tmp_path):
 
     result = runner.invoke(main, command, env=env)
     assert result.exit_code == 0
-    assert result.output.endswith("already exists. Nothing to do.\n")
+    assert "already exists. Nothing to do.\n" in result.output
 
     command = ["init", "-n", "toto", "-e", "toto.lastname@me", "--auto", "--force"]
     result = runner.invoke(main, command, env=env)
