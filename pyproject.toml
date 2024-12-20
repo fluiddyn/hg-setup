@@ -5,7 +5,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "hg-setup"
-version = "0.1.2"
+version = "0.1.3"
 description = "Helper for setting up and configuring Mercurial"
 authors = [
     { name = "Pierre Augier", email = "pierre.augier@univ-grenoble-alpes.fr" },
