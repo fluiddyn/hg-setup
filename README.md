@@ -6,10 +6,10 @@
 [![Github Actions](https://github.com/fluiddyn/hg-setup/actions/workflows/ci.yml/badge.svg?branch=branch/default)](https://github.com/fluiddyn/hg-setup/actions)
 
 hg-setup can be used to setup [Mercurial]. The main command provided by this package,
-`hg-setup init` launches a simple Terminal User Interface (TUI) to initialize a
+`hg-setup init`, launches a simple Terminal User Interface (TUI) to initialize a
 reasonable user configuration file and shell completion for bash and zsh.
 
-With [UV], one can run it without installation with:
+With [UV], one can even run it without installation with:
 
 ```sh
 uvx hg-setup init
@@ -19,12 +19,12 @@ uvx hg-setup init
 
 [Mercurial] is a Python application using C and Rust extensions. It is extendable with
 Mercurial extensions and two Python packages provide very useful Mercurial extensions
-that most users should use : [hg-git] (Mercurial extension hggit) and [hg-evolve]
-(Mercurial extensions topic and evolve).
+that most users should use : [hg-git] (Mercurial extension `hggit`) and [hg-evolve]
+(Mercurial extensions `topic` and `evolve`).
 
 These things are packaged in 3 PyPI packages (associated with their equivalent
 conda-forge packages): mercurial, hg-git, hg-evolve. Moreover, to use Mercurial
-extensions, one has to write few lines in a configuration file (~/.hgrc).
+extensions, one has to write few lines in a configuration file (`~/.hgrc`).
 
 Mercurial with hg-git and hg-evolve is great but it is a bit difficult to setup for
 beginners. hg-setup is there to help people to start with Mercurial and finalize its
@@ -66,8 +66,6 @@ conda-app install hg-setup
 - With [Pixi]
 
 ```sh
-pixi global install mercurial-app
-# or (equivalent)
 pixi global install mercurial --with hg-git --with hg-evolve
 # and then
 pixi global install hg-setup

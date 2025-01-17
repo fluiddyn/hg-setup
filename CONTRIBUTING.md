@@ -18,7 +18,7 @@ You will see that hg-setup is based on [Click] (for the command line interface) 
 [Textual] (for the terminal user interfaces).
 
 Note also that we require Python >=3.11, to ease the development and because hg-setup is
-going to be installed with tools (UV, Pixi) for which is not difficult to get a recent
+going to be installed with tools (UV, Pixi) for which it is not difficult to get a recent
 Python.
 
 [click]: https://click.palletsprojects.com
