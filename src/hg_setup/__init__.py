@@ -1,6 +1,7 @@
 """hg-setup package"""
 
 import sys
+import configparser
 
 import rich_click as click
 
@@ -29,12 +30,36 @@ def init(name, email, auto, force):
     """Initialize Mercurial configuration file"""
     init_shell_completions()
     exists, path_config = check_hg_conf_file()
-    if exists and not force:
-        click.echo(
-            f"File {path_config} already exists. Nothing to do.\n"
-            "Run `hg-setup init -f` to launch the user interface."
-        )
-        return
+    if exists:
+        if not force:
+            click.echo(
+                f"File {path_config} already exists. Nothing to do.\n"
+                "Run `hg-setup init -f` to launch the user interface."
+            )
+            return
+
+        if name is None or email is None:
+            # try to get name and/or email from config
+            config = configparser.ConfigParser()
+            try:
+                config.read(path_config)
+                name_email = config["ui"]["username"]
+            except (KeyError, configparser.MissingSectionHeaderError):
+                pass
+            else:
+                if "<" in name_email:
+                    name_conf, email_conf = name_email.split("<", 1)
+                    name_conf = name_conf.strip()
+                    email_conf = email_conf.strip()[:-1]
+                else:
+                    name_conf = name_email.strip()
+                    email_conf = None
+
+                if name is None and name_conf is not None:
+                    name = name_conf
+
+                if email is None and email_conf is not None:
+                    email = email_conf
 
     if auto:
         init_auto(name, email, force, path_config)
