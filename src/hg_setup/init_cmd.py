@@ -103,6 +103,8 @@ class InitHgrcApp(App):
     _hgrc_text: str
     log_hgrc: Markdown
     _label_feedback: Label
+    vert_hgrc_params: VerticalHgrcParams
+    _button_save: Button
 
     CSS_PATH = "init_app.tcss"
 
