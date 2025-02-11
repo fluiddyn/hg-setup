@@ -1,7 +1,12 @@
 # Release notes
 
 See also the
-[unreleased changes](https://foss.heptapod.net/fluiddyn/hg-setup/-/compare/0.1.3...branch%2Fdefault).
+[unreleased changes](https://foss.heptapod.net/fluiddyn/hg-setup/-/compare/0.1.4...branch%2Fdefault).
+
+## [0.1.4] (2025/02/11)
+
+- [!7](https://foss.heptapod.net/fluiddyn/hg-setup/-/merge_requests/7) confirm
+  config file creation and take into account data in existing file.
 
 ## [0.1.3] (2024/12/20)
 
@@ -17,3 +22,4 @@ See also the
 
 [0.1.2]: https://foss.heptapod.net/fluiddyn/hg-setup/-/compare/0.1.0...0.1.2
 [0.1.3]: https://foss.heptapod.net/fluiddyn/hg-setup/-/compare/0.1.2...0.1.3
+[0.1.4]: https://foss.heptapod.net/fluiddyn/hg-setup/-/compare/0.1.3...0.1.4
