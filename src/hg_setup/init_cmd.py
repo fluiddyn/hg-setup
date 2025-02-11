@@ -188,6 +188,16 @@ class InitHgrcApp(App):
         self._create_hgrc_code()
         path_hgrc.write_text(self._hgrc_text)
 
+        if not exists:
+            if await self.push_screen_wait(
+                QuestionScreen(
+                    "A user config file has been created. Do you want to quit?"
+                )
+            ):
+                self.app.exit()
+            else:
+                return
+
     @work
     @on(Button.Pressed, "#button_save")
     async def on_save_button_pressed(self, event: Button.Pressed) -> None:

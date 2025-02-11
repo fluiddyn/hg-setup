@@ -24,6 +24,8 @@ async def test_init_tui(tmp_path, monkeypatch):
         await pilot.press("hello")
         await pilot.click(app.vert_hgrc_params)
         await pilot.click("#button_save")
+        # answer to the question "Do you want to quit?"
+        await pilot.click("#no")
         t0 = time()
         while not (tmp_dir / name_default).exists():
             sleep(0.05)
