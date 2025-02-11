@@ -1,5 +1,6 @@
 """hgrc interactions"""
 
+import configparser
 import os
 import subprocess
 
@@ -28,6 +29,35 @@ def check_hg_conf_file():
         return True, path_hgrc
     else:
         return False, path_default
+
+
+def read_hg_conf_simple(path: Path):
+    """Read few parameters in a config file"""
+    config = configparser.ConfigParser()
+    try:
+        config.read(path)
+    except configparser.MissingSectionHeaderError:
+        return None, None, None
+
+    try:
+        name_email = config["ui"]["username"]
+    except KeyError:
+        name, email = None, None
+    else:
+        if "<" in name_email:
+            name, email = name_email.split("<", 1)
+            name = name.strip()
+            email = email.strip()[:-1]
+        else:
+            name = name_email.strip()
+            email = None
+
+    try:
+        editor = config["ui"]["editor"]
+    except KeyError:
+        editor = None
+
+    return name, email, editor
 
 
 class HgrcCodeMaker:

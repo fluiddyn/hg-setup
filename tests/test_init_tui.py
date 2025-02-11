@@ -17,12 +17,15 @@ async def test_init_tui(tmp_path, monkeypatch):
 
     name = "Toto Lastname"
     email = "toto.lastname@proton.me"
-    app = InitHgrcApp(name, email)
+    editor = "emacs -nw -Q"
+    app = InitHgrcApp(name, email, editor)
     async with app.run_test() as pilot:
         await pilot.click(app.vert_hgrc_params.inputs["name"])
         await pilot.press("hello")
         await pilot.click(app.vert_hgrc_params)
         await pilot.click("#button_save")
+        # answer to the question "Do you want to quit?"
+        await pilot.click("#no")
         t0 = time()
         while not (tmp_dir / name_default).exists():
             sleep(0.05)

@@ -5,7 +5,7 @@ import sys
 import rich_click as click
 
 from .init_cmd import init_tui, init_auto
-from .hgrcs import check_hg_conf_file
+from .hgrcs import check_hg_conf_file, read_hg_conf_simple
 from .completion import init_shell_completions, init_shell_completion_1_shell
 
 
@@ -29,17 +29,27 @@ def init(name, email, auto, force):
     """Initialize Mercurial configuration file"""
     init_shell_completions()
     exists, path_config = check_hg_conf_file()
-    if exists and not force:
-        click.echo(
-            f"File {path_config} already exists. Nothing to do.\n"
-            "Run `hg-setup init -f` to launch the user interface."
-        )
-        return
+    if exists:
+        if not force:
+            click.echo(
+                f"File {path_config} already exists. Nothing to do.\n"
+                "Run `hg-setup init -f` to launch the user interface."
+            )
+            return
+
+        name_hgrc, email_hgrc, editor = read_hg_conf_simple(path_config)
+
+        if name is None and name_hgrc is not None:
+            name = name_hgrc
+        if email is None and email_hgrc is not None:
+            email = email_hgrc
+    else:
+        editor = None
 
     if auto:
-        init_auto(name, email, force, path_config)
+        init_auto(name, email, editor, force, path_config)
     else:
-        init_tui(name, email)
+        init_tui(name, email, editor)
 
 
 # @main.command(context_settings=CONTEXT_SETTINGS)
