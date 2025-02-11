@@ -1,12 +1,11 @@
 """hg-setup package"""
 
 import sys
-import configparser
 
 import rich_click as click
 
 from .init_cmd import init_tui, init_auto
-from .hgrcs import check_hg_conf_file
+from .hgrcs import check_hg_conf_file, read_hg_conf_simple
 from .completion import init_shell_completions, init_shell_completion_1_shell
 
 
@@ -38,33 +37,19 @@ def init(name, email, auto, force):
             )
             return
 
-        if name is None or email is None:
-            # try to get name and/or email from config
-            config = configparser.ConfigParser()
-            try:
-                config.read(path_config)
-                name_email = config["ui"]["username"]
-            except (KeyError, configparser.MissingSectionHeaderError):
-                pass
-            else:
-                if "<" in name_email:
-                    name_conf, email_conf = name_email.split("<", 1)
-                    name_conf = name_conf.strip()
-                    email_conf = email_conf.strip()[:-1]
-                else:
-                    name_conf = name_email.strip()
-                    email_conf = None
+        name_hgrc, email_hgrc, editor = read_hg_conf_simple(path_config)
 
-                if name is None and name_conf is not None:
-                    name = name_conf
-
-                if email is None and email_conf is not None:
-                    email = email_conf
+        if name is None and name_hgrc is not None:
+            name = name_hgrc
+        if email is None and email_hgrc is not None:
+            email = email_hgrc
+    else:
+        editor = None
 
     if auto:
-        init_auto(name, email, force, path_config)
+        init_auto(name, email, editor, force, path_config)
     else:
-        init_tui(name, email)
+        init_tui(name, email, editor)
 
 
 # @main.command(context_settings=CONTEXT_SETTINGS)

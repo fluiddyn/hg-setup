@@ -117,11 +117,14 @@ class InitHgrcApp(App):
         ),
     ]
 
-    def __init__(self, name, email):
+    def __init__(self, name, email, editor):
         if name is not None:
             inputs["name"]["value"] = name
         if email is not None:
             inputs["email"]["value"] = email
+        if editor is not None:
+            inputs["editor"]["value"] = editor
+
         self.hgrc_maker = HgrcCodeMaker()
         super().__init__()
 
@@ -203,9 +206,9 @@ class InitHgrcApp(App):
         self.log_hgrc.write(self._create_hgrc_code().strip())
 
 
-def init_tui(name, email):
+def init_tui(name, email, editor):
     """main TUI function for command init"""
-    app = InitHgrcApp(name, email)
+    app = InitHgrcApp(name, email, editor)
     app.run()
 
 
@@ -215,17 +218,20 @@ def save_existing_file(path):
     os.rename(path, path_saved)
 
 
-def init_auto(name, email, force, path_hgrc):
+def init_auto(name, email, editor, force, path_hgrc):
     """init without user interaction"""
 
-    if force:
-        save_existing_file(path_hgrc)
-
     if path_hgrc.exists():
-        click.echo(f"{path_hgrc} already exists. Nothing to do.")
-        return
+        if force:
+            save_existing_file(path_hgrc)
+        else:
+            click.echo(f"{path_hgrc} already exists. Nothing to do.")
+            return
 
-    text = HgrcCodeMaker().make_text(name, email, editor_default)
+    if editor is None:
+        editor = editor_default
+
+    text = HgrcCodeMaker().make_text(name, email, editor)
     path_hgrc.write_text(text)
 
     click.echo(f"configuration written in {path_hgrc}.")
