@@ -3,6 +3,10 @@
 See also the
 [unreleased changes](https://foss.heptapod.net/fluiddyn/hg-setup/-/compare/0.1.4...branch%2Fdefault).
 
+## [0.1.5] (2025/06/26)
+
+- `experimental.topic-mode = warning` by default.
+
 ## [0.1.4] (2025/02/11)
 
 - [!7](https://foss.heptapod.net/fluiddyn/hg-setup/-/merge_requests/7) confirm
@@ -23,3 +27,4 @@ See also the
 [0.1.2]: https://foss.heptapod.net/fluiddyn/hg-setup/-/compare/0.1.0...0.1.2
 [0.1.3]: https://foss.heptapod.net/fluiddyn/hg-setup/-/compare/0.1.2...0.1.3
 [0.1.4]: https://foss.heptapod.net/fluiddyn/hg-setup/-/compare/0.1.3...0.1.4
+[0.1.5]: https://foss.heptapod.net/fluiddyn/hg-setup/-/compare/0.1.4...0.1.5
