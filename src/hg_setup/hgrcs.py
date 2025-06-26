@@ -154,9 +154,22 @@ class HgrcCodeMaker:
             # (see 'hg help pager' for details)
             {paginate}
 
+            [experimental]
+            # topic-mode (see `hg help -e topic`)
+            # set the behavior when a draft commit is created in default:
+            # - ignore  (do nothing special, default)
+            # - warning (print a warning)
+            # - enforce (abort the commit, except for merge)
+            # - enforce-all (abort the commit, even for merge)
+            # - random (use a randomized generated topic)
+            topic-mode = warning
+
             [alias]
             lg = log -G
             up = up -v
+
+            # [subrepos]
+            # git:allowed = true
 
             [extensions]
             # uncomment the lines below to enable some popular extensions
